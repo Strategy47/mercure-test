@@ -24,7 +24,7 @@ class DefaultController extends AbstractController
     }
 
     /**
-     * @Route("/chat", name="app_homepage")
+     * @Route("/chat", name="chat")
      */
     public function chat(): Response
     {

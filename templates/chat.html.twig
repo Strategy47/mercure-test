@@ -9,22 +9,36 @@
             font-weight: bold;
             float: right;
         }
+
+        .date {
+            font-size: small;
+        }
+
+        .chatbox {
+            height: 475px;
+            overflow-y: auto;
+            border: 1px solid #6c757d;
+            border-radius: 10px;
+        }
     </style>
 {% endblock %}
 
 {% block body %}
     <div class="container">
-        <h1>Création d'un api dans Symfony</h1>
+        <div class="alert alert-primary" role="alert">
+            Test chat API Symfony avec Mercure
+        </div>
+        <br>
 
-        <ul class="list-group list-group-flush" style="height: 500px; overflow-y: auto">
+        <ul class="list-group list-group-flush chatbox">
             {% for message in messages %}
-                <li id="{{ message.id }}" class="list-group-item"><span class="delete btn-sm btn-danger">supprimer</span> {{ message.date }} <strong>{{ message.username }}</strong> : {{ message.message }}</li>
+                <li id="{{ message.id }}" class="list-group-item"><span class="delete btn-sm btn-danger">supprimer</span> <span class="date">{{ message.date }}</span> <strong>{{ message.username }}</strong> : {{ message.message }}</li>
             {% endfor %}
         </ul>
 
-        <br> <br> <hr> <br> <br>
+         <hr>
 
-        <div class="col-sm-6">
+        <div class="offset-sm-3 col-sm-6">
 
             <form id="message-form" action="#" method="post">
                 <div class="form-group">
@@ -56,9 +70,9 @@
             let message = JSON.parse(e.data);
 
             if (message.id && message.message && message.username) {
-                let line = '<li id="' + message.id + '" class="list-group-item"><span class="delete btn-sm btn-danger">supprimer</span> ' + message.date + ' <strong>' + message.username + '</strong> : ' + message.message + '</li>';
+                let line = '<li id="' + message.id + '" class="list-group-item"><span class="delete btn-sm btn-danger">supprimer</span> <span class="date">' + message.date + '</span> <strong>' + message.username + '</strong> : ' + message.message + '</li>';
 
-                $('ul').append(line);
+                $('.chatbox').append(line);
                 bottom();
             }
 
@@ -107,7 +121,7 @@
         });
 
         function bottom() {
-            var wtf    = $('ul');
+            var wtf    = $('.chatbox');
             var height = wtf[0].scrollHeight;
             wtf.scrollTop(height);
         }
