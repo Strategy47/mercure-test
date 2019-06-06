@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Test Mercure Symfony and react{% endblock %}
+
+{% block body %}
+
+    <h1>Création d'un api dans Symfony</h1>
+
+    <ul>
+        {% for message in messages %}
+            <li id="{{ message.id }}">{{ message.id }} : {{ message.message }}</li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        // The subscriber subscribes to updates for the https://example.com/users/dunglas topic
+        // and to any topic matching https://example.com/books/{id}
+        const url = new URL('{{ mercure_url }}');
+        url.searchParams.append('topic', 'http://192.168.1.212:8080/api/messages/{id}');
+
+        const eventSource = new EventSource(url);
+
+        // The callback will be called every time an update is published
+        eventSource.onmessage = e => {
+            let message = JSON.parse(e.data);
+
+            if (message.id && message.message) {
+                let node = document.createElement("LI");
+                let textnode = document.createTextNode(message.id + ' : ' + message.message);
+                node.appendChild(textnode);
+                document.querySelector('ul').appendChild(node);
+            }
+
+            if (message['@id']) {
+                let id = '#' + message['@id'].split('/').slice(-1)[0];
+
+                $(id).remove();
+            }
+        }
+    </script>
+{% endblock %}
