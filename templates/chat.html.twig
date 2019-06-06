@@ -3,14 +3,27 @@
 {% block title %}Test Mercure Symfony and react{% endblock %}
 
 {% block body %}
-
     <h1>Création d'un api dans Symfony</h1>
 
     <ul>
         {% for message in messages %}
-            <li id="{{ message.id }}">{{ message.id }} : {{ message.message }}</li>
+            <li id="{{ message.id }}"><strong>{{ message.username }}</strong> : {{ message.message }}</li>
         {% endfor %}
     </ul>
+
+
+    <form id="message-form" action="#" method="post">
+        <div>
+            <label for="username">Pseudo :</label>
+            <input type="text" id="username" name="username" value="Anonymous" required>
+        </div>
+        <div>
+            <label for="message">Message :</label>
+            <textarea id="message" name="message" required></textarea>
+        </div>
+
+        <input type="submit" value="Envoyer">
+    </form>
 
 {% endblock %}
 
@@ -27,11 +40,10 @@
         eventSource.onmessage = e => {
             let message = JSON.parse(e.data);
 
-            if (message.id && message.message) {
-                let node = document.createElement("LI");
-                let textnode = document.createTextNode(message.id + ' : ' + message.message);
-                node.appendChild(textnode);
-                document.querySelector('ul').appendChild(node);
+            if (message.id && message.message && message.username) {
+                let line = '<li id="' + message.id + '"><strong>' + message.username + '</strong> : ' + message.message + '</li>';
+
+                $('ul').append(line);
             }
 
             if (message['@id']) {
@@ -39,6 +51,23 @@
 
                 $(id).remove();
             }
-        }
+        };
+
+        $('#message-form').submit(function(e) {
+            e.preventDefault();
+            let message = $('#message').val();
+            let username = $('#username').val();
+
+            $.ajax({
+                url:"{{ path('api_messages_post_collection') }}",
+                type:"POST",
+                data:'{"message":"' + message + '", "username": "' + username + '"}',
+                contentType:"application/json",
+                dataType:"json",
+                success: function(data){
+                    console.log(data);
+                }
+            });
+        });
     </script>
 {% endblock %}
