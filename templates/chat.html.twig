@@ -2,14 +2,23 @@
 
 {% block title %}Test Mercure Symfony and react{% endblock %}
 
+{% block stylesheets %}
+    <style>
+        .delete {
+            cursor: pointer;
+            font-weight: bold;
+            float: right;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
     <div class="container">
         <h1>Création d'un api dans Symfony</h1>
 
-
         <ul class="list-group list-group-flush" style="height: 500px; overflow-y: auto">
             {% for message in messages %}
-                <li id="{{ message.id }}" class="list-group-item"><strong>{{ message.username }}</strong> : {{ message.message }}</li>
+                <li id="{{ message.id }}" class="list-group-item"><span class="delete btn-sm btn-danger">supprimer</span> {{ message.date }} <strong>{{ message.username }}</strong> : {{ message.message }}</li>
             {% endfor %}
         </ul>
 
@@ -27,7 +36,7 @@
                     <textarea id="message" class="form-control" name="message" required></textarea>
                 </div>
 
-                <input type="submit" class="btn btn-primary" value="Envoyer">
+                <button type="submit" class="btn btn-primary">Envoyer</button>
             </form>
         </div>
     </div>
@@ -47,7 +56,7 @@
             let message = JSON.parse(e.data);
 
             if (message.id && message.message && message.username) {
-                let line = '<li id="' + message.id + '" class="list-group-item"><strong>' + message.username + '</strong> : ' + message.message + '</li>';
+                let line = '<li id="' + message.id + '" class="list-group-item"><span class="delete btn-sm btn-danger">supprimer</span> ' + message.date + ' <strong>' + message.username + '</strong> : ' + message.message + '</li>';
 
                 $('ul').append(line);
                 bottom();
@@ -55,7 +64,6 @@
 
             if (message['@id']) {
                 let id = '#' + message['@id'].split('/').slice(-1)[0];
-
                 $(id).remove();
             }
         };
@@ -79,6 +87,23 @@
                     console.log(data);
                 }
             });
+        });
+
+        $('ul').on('click', function (e) {
+            let target = $(e.target);
+
+            if (target.hasClass('delete')) {
+                let id = target.closest('li').attr('id');
+
+                let url = "{{ path('api_messages_post_collection') }}" + "/" + id;
+
+                $.ajax({
+                    url: url,
+                    type: "DELETE",
+                    contentType: "application/json",
+                    dataType: "json"
+                });
+            }
         });
 
         function bottom() {

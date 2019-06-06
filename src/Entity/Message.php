@@ -35,6 +35,19 @@ class Message
      */
     public $username;
 
+
+    /**
+     * @var string $name A name property - this description will be available in the API documentation too.
+     *
+     * @ORM\Column
+     */
+    public $date;
+
+    public function __construct()
+    {
+        $this->date = (new \DateTime())->format('H:i:s');
+    }
+
     /**
      * @return int|null
      */
@@ -68,6 +81,14 @@ class Message
     public function getUsername(): ?string
     {
         return $this->username;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getDate(): ?string
+    {
+        return $this->date;
     }
 
     /**
