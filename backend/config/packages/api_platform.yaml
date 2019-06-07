@@ -3,7 +3,9 @@ api_platform:
         paths: ['%kernel.project_dir%/src/Entity']
     mercure:
         hub_url: '%env(MERCURE_SUBSCRIBE_URL)%'
-
+    collection:
+        pagination:
+            enabled: false
 #    formats:
 #        json:     ['application/json']
 #        html:     ['text/html']
