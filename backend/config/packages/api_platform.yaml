@@ -4,6 +4,6 @@ api_platform:
     mercure:
         hub_url: '%env(MERCURE_SUBSCRIBE_URL)%'
 
-    formats:
-        json:     ['application/json']
-        html:     ['text/html']
+#    formats:
+#        json:     ['application/json']
+#        html:     ['text/html']

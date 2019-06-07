@@ -3,49 +3,56 @@
 namespace App\Entity;
 
 use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ApiResource(mercure=true)
- * @ORM\Entity
+ * @ApiResource(
+ *     mercure=true,
+ *     normalizationContext={"groups"={"read"}},
+ *     denormalizationContext={"groups"={"write"}},
+ *     itemOperations={"get"},
+ *     collectionOperations={"post","get"})
+ *
+ * @ORM\Entity()
+ *
  */
 class Message
 {
     /**
-     * @ORM\Column(type="integer")
+     * @var int The entity Id
+     *
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     private $id;
 
     /**
-     * @var string $name A name property - this description will be available in the API documentation too.
+     * @var string the text
      *
      * @ORM\Column
      * @Assert\NotBlank
+     * @Groups({"read", "write"})
      */
-    public $message;
+    public $text;
 
     /**
-     * @var string $name A name property - this description will be available in the API documentation too.
-     *
-     * @ORM\Column
-     * @Assert\NotBlank
+     * @ORM\ManyToOne(targetEntity="User")
+     * @Groups({"read"})
      */
-    public $username;
-
+    public $author;
 
     /**
-     * @var string $name A name property - this description will be available in the API documentation too.
-     *
-     * @ORM\Column
+     * @ORM\Column(type="datetime")
+     * @Groups({"read"})
      */
-    public $date;
+    public $sentAt;
 
     public function __construct()
     {
-        $this->date = (new \DateTime())->format('H:i:s');
+        $this->sentAt = new \DateTime();
     }
 
     /**
@@ -57,20 +64,31 @@ class Message
     }
 
     /**
-     * @return null|string
+     * @param User $user
+     * @return Message
      */
-    public function getMessage(): ?string
+    public function setAuthor(User $user): self
     {
-        return $this->message;
+        $this->author = $user;
+
+        return $this;
     }
 
     /**
-     * @param string $message
+     * @return User|null
+     */
+    public function getAuthor(): ?User
+    {
+        return $this->author;
+    }
+
+    /**
+     * @param string $text
      * @return Message
      */
-    public function setMessage(string $message): self
+    public function setText(string $text): self
     {
-        $this->message = $message;
+        $this->text = $text;
 
         return $this;
     }
@@ -78,27 +96,27 @@ class Message
     /**
      * @return null|string
      */
-    public function getUsername(): ?string
+    public function getText(): ?string
     {
-        return $this->username;
+        return $this->text;
     }
 
     /**
-     * @return null|string
-     */
-    public function getDate(): ?string
-    {
-        return $this->date;
-    }
-
-    /**
-     * @param string $username
+     * @param \DateTime $sentAt
      * @return Message
      */
-    public function setUsername(string $username): self
+    public function setSentAt(\DateTime $sentAt): self
     {
-        $this->username = $username;
+        $this->sentAt = $sentAt;
 
         return $this;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getSentAt(): ?\DateTime
+    {
+        return $this->sentAt;
     }
 }
